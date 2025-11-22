@@ -2,10 +2,12 @@ class_name Enemy extends CharacterBody2D
 
 signal direction_changed(new_direction: Vector2)
 signal enemy_damaged()
+signal enemy_die()
 
 const DIR_4 = [Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT,Vector2.UP]
 
-@export var hp : int = 3
+@export var max_hp : int = 3
+var hp : int = 3
 
 var cardinal_direction : Vector2 = Vector2.DOWN
 var direction : Vector2 = Vector2.ZERO
@@ -14,20 +16,33 @@ var invulnerable : bool = false
 
 @onready var animation_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var state_machine: EnemyStateMachine = $EnemyStateMachine
+@onready var hit_box : HitBox = $HitBox
+@onready var hp_bar: ProgressBar = $HPBar
+
+const DamagePopupScene := preload("res://UI/DamagePopup/DamagePopup.tscn")
+ 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	hp = max_hp
+	if hp_bar:
+		hp_bar.min_value = 0
+		hp_bar.max_value = max_hp
+		hp_bar.value = hp
+		hp_bar.visible = true
+	
 	state_machine.Initialize(self)
 	player  = PlayerManager.player
+	hit_box.Damaged.connect(_take_damage)
 	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta) -> void:
 	pass
-
 func _physics_process(_delta) -> void:
 	move_and_slide()
 	
+
 func SetDirection(_new_direction: Vector2) -> bool:
 	direction = _new_direction
 	
@@ -75,3 +90,35 @@ func AniDirection() -> String:
 	else:
 		# left/right đều dùng "side" (sprite được flip để phân biệt)
 		return "side"
+
+func _take_damage(damage : int)  -> void:
+	if invulnerable:
+		return
+	if damage > 0:
+		_show_damage_popup(damage)
+	hp -= damage
+	if hp < 0:
+		hp = 0
+
+	if hp_bar:
+		hp_bar.value = hp
+
+	if hp <= 0:
+		enemy_die.emit()
+		return
+
+	enemy_damaged.emit()
+	
+func _init_hp_bar() -> void:
+	if hp_bar:
+		hp_bar.min_value = 0
+		hp_bar.max_value = max_hp
+		hp_bar.value = hp
+		# Nếu muốn chỉ hiện khi mất máu:
+		hp_bar.visible = hp < max_hp
+
+func _show_damage_popup(damage: int) -> void:
+	var popup := DamagePopupScene.instantiate()
+	# Thêm vào cùng parent với Enemy, để nó bay trong world 2D
+	get_parent().add_child(popup)
+	popup.show_damage(damage, global_position)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=151 format=3 uid="uid://mw13vnqj7hu5"]
+[gd_scene load_steps=158 format=3 uid="uid://mw13vnqj7hu5"]
 
 [ext_resource type="Texture2D" uid="uid://bskwx7ytcr4y6" path="res://Enemies/Slime3/Sprites/Slime3_Attack_with_shadow.png" id="1_3ngyc"]
 [ext_resource type="Script" path="res://Enemies/Scripts/enemy.gd" id="1_schci"]
@@ -10,6 +10,10 @@
 [ext_resource type="Script" path="res://Enemies/Scripts/enemy_state_machine.gd" id="8_vjeh8"]
 [ext_resource type="Script" path="res://Enemies/Scripts/States/enemy_state_idle.gd" id="9_acoyo"]
 [ext_resource type="Script" path="res://Enemies/Scripts/States/enemy_state_wander.gd" id="10_gvn0u"]
+[ext_resource type="Script" path="res://Enemies/Scripts/States/enemy_state_hurt.gd" id="11_8fj0r"]
+[ext_resource type="PackedScene" uid="uid://choija7h3esyf" path="res://GeneralNodes/HurtBox/hurt_box.tscn" id="12_vjiwu"]
+[ext_resource type="Script" path="res://Enemies/Scripts/States/enemy_state_die.gd" id="12_yytqj"]
+[ext_resource type="PackedScene" uid="uid://cgdxis75djbea" path="res://GeneralNodes/HitBox/hit_box.tscn" id="13_hyxiv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3kk18"]
 atlas = ExtResource("1_3ngyc")
@@ -593,8 +597,8 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_f7try")
 }],
-"loop": true,
-"name": &"down_attack_slime3",
+"loop": false,
+"name": &"down_attack",
 "speed": 12.0
 }, {
 "frames": [{
@@ -627,12 +631,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_t0l5v")
-}, {
-"duration": 1.0,
-"texture": null
 }],
 "loop": false,
-"name": &"down_die_slime3",
+"name": &"down_die",
 "speed": 12.0
 }, {
 "frames": [{
@@ -652,7 +653,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_jhb70")
 }],
 "loop": false,
-"name": &"down_hurt_slime3",
+"name": &"down_hurt",
 "speed": 12.0
 }, {
 "frames": [{
@@ -704,7 +705,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_aqn2t")
 }],
 "loop": true,
-"name": &"down_run_slime3",
+"name": &"down_run",
 "speed": 12.0
 }, {
 "frames": [{
@@ -764,8 +765,8 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jnkwl")
 }],
-"loop": true,
-"name": &"side_attack_slime3",
+"loop": false,
+"name": &"side_attack",
 "speed": 12.0
 }, {
 "frames": [{
@@ -798,12 +799,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_yvicq")
-}, {
-"duration": 1.0,
-"texture": null
 }],
 "loop": false,
-"name": &"side_die_slime3",
+"name": &"side_die",
 "speed": 12.0
 }, {
 "frames": [{
@@ -823,7 +821,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_v5lwr")
 }],
 "loop": false,
-"name": &"side_hurt_slime3",
+"name": &"side_hurt",
 "speed": 12.0
 }, {
 "frames": [{
@@ -875,7 +873,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_ksduu")
 }],
 "loop": true,
-"name": &"side_run_slime3",
+"name": &"side_run",
 "speed": 12.0
 }, {
 "frames": [{
@@ -935,8 +933,8 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4d2it")
 }],
-"loop": true,
-"name": &"up_attack_slime3",
+"loop": false,
+"name": &"up_attack",
 "speed": 12.0
 }, {
 "frames": [{
@@ -974,7 +972,7 @@ animations = [{
 "texture": null
 }],
 "loop": false,
-"name": &"up_die_slime3",
+"name": &"up_die",
 "speed": 12.0
 }, {
 "frames": [{
@@ -994,7 +992,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_dwu0u")
 }],
 "loop": false,
-"name": &"up_hurt_slime3",
+"name": &"up_hurt",
 "speed": 12.0
 }, {
 "frames": [{
@@ -1046,7 +1044,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_pse67")
 }],
 "loop": true,
-"name": &"up_run_slime3",
+"name": &"up_run",
 "speed": 12.0
 }, {
 "frames": [{
@@ -1082,15 +1080,34 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_w4i7t"]
 radius = 18.1108
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_2mm8p"]
+radius = 22.0227
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mx4dj"]
+bg_color = Color(0.787759, 0.787759, 0.787759, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3c3yy"]
+bg_color = Color(1.34766e-06, 0.726056, 0.17855, 1)
+border_color = Color(1.07813e-05, 0.934402, 0.739121, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="Slime3" type="CharacterBody2D"]
 collision_layer = 256
-collision_mask = 0
+collision_mask = 16
 script = ExtResource("1_schci")
+max_hp = 5
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_ccjgc")
-animation = &"down_idle"
+animation = &"up_walk"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 12)
@@ -1107,3 +1124,43 @@ after_idle_state = NodePath("../Wander")
 script = ExtResource("10_gvn0u")
 state_animation_duration = 1.0
 next_state = NodePath("../Idle")
+
+[node name="Hurt" type="Node" parent="EnemyStateMachine" node_paths=PackedStringArray("next_state")]
+script = ExtResource("11_8fj0r")
+next_state = NodePath("../Idle")
+
+[node name="Die" type="Node" parent="EnemyStateMachine"]
+script = ExtResource("12_yytqj")
+
+[node name="HurtBox" parent="." instance=ExtResource("12_vjiwu")]
+position = Vector2(0, 8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(0, -5)
+shape = SubResource("CircleShape2D_2mm8p")
+debug_color = Color(0.730326, 0.264423, 0.96311, 0.42)
+
+[node name="HitBox" parent="." instance=ExtResource("13_hyxiv")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0, 3)
+shape = SubResource("CircleShape2D_2mm8p")
+debug_color = Color(0.981218, 0, 0.372976, 0.42)
+
+[node name="HPBar" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(40, 2)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_mx4dj")
+theme_override_styles/fill = SubResource("StyleBoxFlat_3c3yy")
+value = 100.0
+show_percentage = false

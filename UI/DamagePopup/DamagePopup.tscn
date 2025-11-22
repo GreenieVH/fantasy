@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://bf6mnjavmxcxe"]
+
+[ext_resource type="Script" path="res://UI/DamagePopup/DamagePopup.gd" id="1_dgyj5"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_j8saf"]
+font_size = 32
+font_color = Color(1, 0.367752, 0.300539, 1)
+
+[node name="DamagePopup" type="Node2D"]
+script = ExtResource("1_dgyj5")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -19.0
+offset_top = -46.0
+offset_right = 21.0
+offset_bottom = -1.0
+text = "0"
+label_settings = SubResource("LabelSettings_j8saf")
+horizontal_alignment = 1
+vertical_alignment = 1
